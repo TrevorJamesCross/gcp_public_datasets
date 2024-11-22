@@ -1,0 +1,50 @@
+"""
+GCP Public Datasets: Create Contents Table
+Author: Trevor Cross
+Last Updated: 11/22/24
+
+Programmatically create a table in BigQuery that contains the file contents of paths
+ending in ".py" from extracted GCP public dataset
+bigquery-public-data.github_repos.files.
+"""
+
+# ----------------------
+# ---Import Libraries---
+# ----------------------
+
+# import GCP libraries
+from google.cloud import bigquery
+
+# import system libraries
+import os
+
+# ------------------------------------
+# ---Initialize & Define Job Config---
+# ------------------------------------
+
+# initialize the BigQuery client
+client = bigquery.Client()
+
+# load SQL query
+query_path = os.path.join("src", "data", "contents_query.sql")
+with open(query_path, "r") as file:
+    query = file.read()
+
+# define destination table id
+dest_id = "gcp-public-data-442116.github_repos_trans.py_contents"
+
+# define a job configuration
+job_config = bigquery.QueryJobConfig(
+    destination=dest_id,
+    write_disposition="WRITE_TRUNCATE",
+)
+
+# -----------------
+# ---Execute Job---
+# -----------------
+
+# execute the query
+query_job = client.query(query, job_config=job_config)
+
+# wait for the job to complete
+query_job.result()

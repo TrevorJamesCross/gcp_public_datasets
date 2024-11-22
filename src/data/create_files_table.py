@@ -33,7 +33,10 @@ with open(query_path, "r") as file:
 dest_id = "gcp-public-data-442116.github_repos_trans.py_files"
 
 # define a job configuration
-job_config = bigquery.QueryJobConfig(destination=dest_id)
+job_config = bigquery.QueryJobConfig(
+    destination=dest_id,
+    write_disposition="WRITE_TRUNCATE",
+)
 
 # -----------------
 # ---Execute Job---
