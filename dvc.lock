@@ -4,11 +4,21 @@ stages:
     cmd: python src/data/pull_raw_metadata.py
   create_files_table:
     cmd: python src/data/create_files_table.py
+    deps:
+    - path: src/data/files_query.sql
+      hash: md5
+      md5: dc595f4810c1a1dc081908f0aecf7a80
+      size: 86
     params:
       params.yaml:
         create_files_table.last_modified: '2022-11-26T22:35:08.666000+00:00'
   create_contents_table:
     cmd: python src/data/create_contents_table.py
+    deps:
+    - path: src/data/contents_query.sql
+      hash: md5
+      md5: 25723df009242dd565787ddd392e9f92
+      size: 225
     params:
       params.yaml:
         create_contents_table.last_modified: '2022-11-27T08:13:56.444000+00:00'

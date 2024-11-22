@@ -46,7 +46,7 @@ for key, id_ in dict_ids.items():
 
     # get metadata from table
     last_modified_time = table.modified
-    print(last_modified_time)
+
     # update last_modified value
     params[f"create_{key}_table"]["last_modified"] = last_modified_time.isoformat()
 

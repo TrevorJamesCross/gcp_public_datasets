@@ -3,9 +3,13 @@ stages:
     cmd: python src/data/pull_raw_metadata.py
   create_files_table:
     cmd: python src/data/create_files_table.py
+    deps:
+      - src/data/files_query.sql
     params:
       - create_files_table.last_modified
   create_contents_table:
     cmd: python src/data/create_contents_table.py
+    deps:
+      - src/data/contents_query.sql
     params:
       - create_contents_table.last_modified
