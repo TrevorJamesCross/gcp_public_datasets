@@ -1,15 +1,53 @@
+#TODO: config .sql files as args into cmd
 stages:
-  check_metadata:
+  pull_raw_metadata:
+    always_changed: true # always run this stage
     cmd: python src/data/pull_raw_metadata.py
+    outs:
+      - params.yaml:
+          cache: false # track in git, not DVC
+          persist: true # keep file between dvc repro runs
+    desc: 'Check metadata of initial raw tables & store in params.yaml. If metadata
+      changes, stages create_files_table and create_contents_table are run; otherwise
+      they are skipped.'
   create_files_table:
     cmd: python src/data/create_files_table.py
-    deps:
-      - src/data/files_query.sql
     params:
       - create_files_table.last_modified
+    deps:
+      - src/data/files.sql
+      - params.yaml
+    outs:
+      - src/data/contents.sql:
+          cache: false
+          persist: true
+    desc: 'Create py_files table in BigQuery using public data.'
   create_contents_table:
     cmd: python src/data/create_contents_table.py
     deps:
-      - src/data/contents_query.sql
+      - src/data/contents.sql
+      - params.yaml
+    outs:
+      - src/data/parse_packages.sql:
+          cache: false
+          persist: true
     params:
       - create_contents_table.last_modified
+    desc: 'Create py_contents table in BigQuery using public data and py_files
+      table.'
+  create_packages_table:
+    cmd: python src/data/create_packages_table.py
+    deps:
+      - src/data/parse_packages.sql
+    outs:
+      - src/data/pull_packages.sql:
+          cache: false
+          persist: true
+    desc: 'Create py_packages table in BigQuery using py_contents table.'
+  preprocess:
+    cmd: python src/data/preproc.py
+    deps:
+      - src/data/pull_packages.sql
+    outs:
+      - data/preprocessed/package_distances.csv
+    desc: 'Pull & preprocess data from py_packages table, save data to CSV.'

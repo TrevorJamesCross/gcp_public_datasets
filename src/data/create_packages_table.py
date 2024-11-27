@@ -1,10 +1,10 @@
 """
-GCP Public Datasets: Create Files Table
+GCP Public Datasets: Parse Python Packages
 Author: Trevor Cross
-Last Updated: 11/21/24
+Last Updated: 11/24/24
 
-Programmatically create a table in BigQuery that contains all file paths
-ending in ".py" from GCP public dataset (bigquery-public-data.github_repos).
+Programmatically create a table in BigQuery that contains extracted Python packages
+from gcp-public-data-442116.github_trans_repo.py_contents.
 """
 
 # ----------------------
@@ -25,12 +25,12 @@ import os
 client = bigquery.Client()
 
 # load SQL query
-query_path = os.path.join("src", "data", "files.sql")
+query_path = os.path.join("src", "data", "parse_packages.sql")
 with open(query_path, "r") as file:
     query = file.read()
 
 # define destination table id
-dest_id = "gcp-public-data-442116.github_repos_trans.py_files"
+dest_id = "gcp-public-data-442116.github_repos_trans.py_packages"
 
 # define a job configuration
 job_config = bigquery.QueryJobConfig(

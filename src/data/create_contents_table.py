@@ -1,7 +1,7 @@
 """
 GCP Public Datasets: Create Contents Table
 Author: Trevor Cross
-Last Updated: 11/22/24
+Last Updated: 11/24/24
 
 Programmatically create a table in BigQuery that contains the file contents of paths
 ending in ".py" from extracted GCP public dataset
@@ -26,7 +26,7 @@ import os
 client = bigquery.Client()
 
 # load SQL query
-query_path = os.path.join("src", "data", "contents_query.sql")
+query_path = os.path.join("src", "data", "contents.sql")
 with open(query_path, "r") as file:
     query = file.read()
 
