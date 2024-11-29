@@ -1,5 +1,5 @@
 """
-GCP Public Datasets: Parse Python Packages
+GCP Public Datasets: Create Python Packages Table
 Author: Trevor Cross
 Last Updated: 11/24/24
 
@@ -25,7 +25,7 @@ import os
 client = bigquery.Client()
 
 # load SQL query
-query_path = os.path.join("src", "data", "parse_packages.sql")
+query_path = os.path.join("src", "data", "packages_table.sql")
 with open(query_path, "r") as file:
     query = file.read()
 

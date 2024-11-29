@@ -15,20 +15,20 @@ stages:
     params:
       - create_files_table.last_modified
     deps:
-      - src/data/files.sql
+      - src/data/files_table.sql
       - params.yaml
     outs:
-      - src/data/contents.sql:
+      - src/data/contents_table.sql:
           cache: false
           persist: true
     desc: 'Create py_files table in BigQuery using public data.'
   create_contents_table:
     cmd: python src/data/create_contents_table.py
     deps:
-      - src/data/contents.sql
+      - src/data/contents_table.sql
       - params.yaml
     outs:
-      - src/data/parse_packages.sql:
+      - src/data/packages_table.sql:
           cache: false
           persist: true
     params:
@@ -38,16 +38,16 @@ stages:
   create_packages_table:
     cmd: python src/data/create_packages_table.py
     deps:
-      - src/data/parse_packages.sql
+      - src/data/packages_table.sql
     outs:
-      - src/data/pull_packages.sql:
+      - src/data/pull_preproc.sql:
           cache: false
           persist: true
     desc: 'Create py_packages table in BigQuery using py_contents table.'
   preprocess:
     cmd: python src/data/preproc.py
     deps:
-      - src/data/pull_packages.sql
+      - src/data/pull_preproc.sql
     outs:
       - data/preprocessed/package_distances.csv
     desc: 'Pull & preprocess data from py_packages table, save data to CSV.'

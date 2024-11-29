@@ -26,7 +26,7 @@ import os
 client = bigquery.Client()
 
 # load SQL query
-query_path = os.path.join("src", "data", "contents.sql")
+query_path = os.path.join("src", "data", "contents_table.sql")
 with open(query_path, "r") as file:
     query = file.read()
 
