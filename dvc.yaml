@@ -51,3 +51,10 @@ stages:
     outs:
       - data/preprocessed/package_distances.csv
     desc: 'Pull & preprocess data from py_packages table, save data to CSV.'
+  cluster:
+    cmd: python src/models/cluster.py
+    deps:
+      - data/preprocessed/package_distances.csv
+    outs:
+      - data/production/clustered_packages.csv
+    desc: 'Pull preprocessed data and append cluster category column. Save data to CSV.'

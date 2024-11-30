@@ -1,12 +1,5 @@
 schema: '2.0'
 stages:
-  check_metadata:
-    cmd: python src/data/pull_raw_metadata.py
-    outs:
-    - path: params.yaml
-      hash: md5
-      md5: 95931a6c2a1cffeefef3951c661e4b97
-      size: 147
   create_files_table:
     cmd: python src/data/create_files_table.py
     deps:
@@ -45,13 +38,6 @@ stages:
       hash: md5
       md5: 587e4a54e40b90bdee2a3eba92721b64
       size: 462
-  pull_raw__metadata:
-    cmd: python src/data/pull_raw_metadata.py
-    outs:
-    - path: params.yaml
-      hash: md5
-      md5: 95931a6c2a1cffeefef3951c661e4b97
-      size: 147
   create_packages_table:
     cmd: python src/data/create_packages_table.py
     deps:
@@ -83,3 +69,15 @@ stages:
       hash: md5
       md5: 95931a6c2a1cffeefef3951c661e4b97
       size: 147
+  cluster:
+    cmd: python src/models/cluster.py
+    deps:
+    - path: data/preprocessed/package_distances.csv
+      hash: md5
+      md5: c7cd3ce68ec82b1aab1ec4319917f28b
+      size: 5043
+    outs:
+    - path: data/production/clustered_packages.csv
+      hash: md5
+      md5: 9a56a08c640666a335b9b9d7ecd9aea8
+      size: 4901

@@ -4,3 +4,6 @@
 # ignore .swp .swo files
 *.swp
 *.swo
+
+# ignore plots/ dir
+plots/

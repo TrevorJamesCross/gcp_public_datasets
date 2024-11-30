@@ -1,7 +1,7 @@
 """
 GCP Public Datasets: Preprocess
 Author: Trevor Cross
-Last Updated: 11/28/24
+Last Updated: 11/30/24
 
 Pull Python package data from gcp-public-data-442116.github_repos_trans.py_packages,
 unnest packages array & truncate unpopular packages (these steps are performed by the
@@ -42,12 +42,15 @@ query_path = os.path.join("src", "data", "pull_preproc.sql")
 with open(query_path, "r") as file:
     query = file.read()
 
-# -----------------
-# ---Execute Job---
-# -----------------
+# ---------------------------------------------
+# ---Execute Job & Obtain Package Occurances---
+# ---------------------------------------------
 
 # execute the query results & load to df
 df = client.query(query).to_dataframe()
+
+# obtain number of package occurances
+df_occ = df["package"].value_counts()
 
 # ------------------------------------
 # ---Pivot, Calc Distances, & Scale---
@@ -70,9 +73,16 @@ df = pd.DataFrame(
     data=md_scaler.fit_transform(df), index=col_names, columns=["V0", "V1"]
 )
 
-# -----------------
-# ---Export Data---
-# -----------------
+# ----------------------------------------------
+# ---Join w/ Package Occurances & Export Data---
+# ----------------------------------------------
+
+# join w/ package occurances
+print()
+print(df_occ)
+print()
+print(df)
+df = df.join(df_occ, validate="1:1")
 
 # define export path
 export_path = os.path.join("data", "preprocessed", "package_distances.csv")
