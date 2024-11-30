@@ -60,8 +60,8 @@ stages:
     outs:
     - path: data/preprocessed/package_distances.csv
       hash: md5
-      md5: c7cd3ce68ec82b1aab1ec4319917f28b
-      size: 5043
+      md5: 824e6ee485ffb8350752464506a6d226
+      size: 5670
   pull_raw_metadata:
     cmd: python src/data/pull_raw_metadata.py
     outs:
@@ -74,10 +74,10 @@ stages:
     deps:
     - path: data/preprocessed/package_distances.csv
       hash: md5
-      md5: c7cd3ce68ec82b1aab1ec4319917f28b
-      size: 5043
+      md5: 824e6ee485ffb8350752464506a6d226
+      size: 5670
     outs:
     - path: data/production/clustered_packages.csv
       hash: md5
-      md5: 9a56a08c640666a335b9b9d7ecd9aea8
-      size: 4901
+      md5: 4e0fb71dc04d25b99ef294ae349dab71
+      size: 5515

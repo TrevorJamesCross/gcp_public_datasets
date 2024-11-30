@@ -1,4 +1,4 @@
-#TODO: config .sql files as args into cmd
+#TODO: config .sql & CSV files as args into cmd
 stages:
   pull_raw_metadata:
     always_changed: true # always run this stage

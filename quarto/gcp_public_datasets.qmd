@@ -1,0 +1,53 @@
+---
+title: "Python Package Clustering"
+format:
+  html:
+    code-fold: true
+---
+
+```{python}
+#| label: fig-Python-Packages
+#| fig-cap: "Scatterplot of Python package distances"
+
+# ----------------------
+# ---Import Libraries---
+# ----------------------
+
+# import standard libraries
+import pandas as pd
+
+# import system libraries
+import os
+
+# import plotting libraries
+import seaborn as sns
+
+# ---------------
+# ---Pull Data---
+# ---------------
+
+# define production data path
+prod_path = os.path.join("..", "data", "production", "clustered_packages.csv")
+
+# read data to df
+df = pd.read_csv(prod_path, index_col="package")
+
+# ---------------
+# ---Plot Data---
+# ---------------
+
+# set plotting config
+sns.set_theme(style="darkgrid")
+size_scaler = 10**-3
+
+# plot scatterplot of package distances
+scatterplot = sns.scatterplot(
+    data=df,
+    x=df["V0"],
+    y=df["V1"],
+    size=df["count"].apply(lambda x: size_scaler * x),
+    hue=df["cluster"],
+    palette=sns.color_palette("husl", len(df["cluster"].unique())),
+    legend=False,
+)
+```

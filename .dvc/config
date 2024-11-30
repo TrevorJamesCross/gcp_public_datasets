@@ -1,0 +1,5 @@
+[core]
+    remote = github_repo_trans
+    autostage = true
+['remote "github_repo_trans"']
+    url = gs://github_repo_trans

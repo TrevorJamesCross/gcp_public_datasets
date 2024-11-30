@@ -7,3 +7,5 @@
 
 # ignore plots/ dir
 plots/
+
+/.quarto/

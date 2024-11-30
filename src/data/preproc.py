@@ -78,10 +78,6 @@ df = pd.DataFrame(
 # ----------------------------------------------
 
 # join w/ package occurances
-print()
-print(df_occ)
-print()
-print(df)
 df = df.join(df_occ, validate="1:1")
 
 # define export path
