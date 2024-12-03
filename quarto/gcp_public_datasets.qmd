@@ -20,7 +20,7 @@ import pandas as pd
 import os
 
 # import plotting libraries
-import seaborn as sns
+import plotly.express as px
 
 # ---------------
 # ---Pull Data---
@@ -32,22 +32,31 @@ prod_path = os.path.join("..", "data", "production", "clustered_packages.csv")
 # read data to df
 df = pd.read_csv(prod_path, index_col="package")
 
+# convert "cluster" col to str
+df["cluster"] = df["cluster"].astype(str)
+
 # ---------------
 # ---Plot Data---
 # ---------------
 
 # set plotting config
-sns.set_theme(style="darkgrid")
 size_scaler = 10**-3
 
 # plot scatterplot of package distances
-scatterplot = sns.scatterplot(
-    data=df,
-    x=df["V0"],
-    y=df["V1"],
+scatterplot = px.scatter(
+    data_frame=df,
+    x="V0",
+    y="V1",
     size=df["count"].apply(lambda x: size_scaler * x),
-    hue=df["cluster"],
-    palette=sns.color_palette("husl", len(df["cluster"].unique())),
-    legend=False,
+    color="cluster",
+    color_discrete_sequence=px.colors.qualitative.Bold,
+    category_orders={"cluster": sorted(df["cluster"].unique(), key=int)},
+    text=df.index,
 )
+
+# adjust text position
+scatterplot.update_traces(textposition="top center")
+
+# show plot
+scatterplot.show()
 ```

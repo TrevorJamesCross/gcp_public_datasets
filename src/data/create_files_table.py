@@ -1,7 +1,7 @@
 """
 GCP Public Datasets: Create Files Table
 Author: Trevor Cross
-Last Updated: 11/21/24
+Last Updated: 12/03/24
 
 Programmatically create a table in BigQuery that contains all file paths
 ending in ".py" from GCP public dataset (bigquery-public-data.github_repos).

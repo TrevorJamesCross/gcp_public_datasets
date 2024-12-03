@@ -1,7 +1,7 @@
 """
 GCP Public Datasets: Create Contents Table
 Author: Trevor Cross
-Last Updated: 11/24/24
+Last Updated: 12/03/24
 
 Programmatically create a table in BigQuery that contains the file contents of paths
 ending in ".py" from extracted GCP public dataset

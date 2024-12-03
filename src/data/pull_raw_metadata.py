@@ -1,7 +1,7 @@
 """
 GCP Public Datasets: Get Raw Table Metadata
 Author: Trevor Cross
-Last Updated: 11/22/24
+Last Updated: 12/03/24
 
 Programmatically get metadata from raw BigQuery tables
 bigquery-public-data.github_repos.{files, .contents} and update params.yaml. This script

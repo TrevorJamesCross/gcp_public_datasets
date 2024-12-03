@@ -1,7 +1,7 @@
 """
 GCP Public Datasets: Create Python Packages Table
 Author: Trevor Cross
-Last Updated: 11/24/24
+Last Updated: 12/03/24
 
 Programmatically create a table in BigQuery that contains extracted Python packages
 from gcp-public-data-442116.github_trans_repo.py_contents.
