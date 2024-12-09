@@ -1,0 +1,83 @@
+schema: '2.0'
+stages:
+  create_files_table:
+    cmd: python src/data/create_files_table.py
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: 95931a6c2a1cffeefef3951c661e4b97
+      size: 147
+    - path: src/data/files_table.sql
+      hash: md5
+      md5: 49c890d665c46872ba14a8c8df0bb8db
+      size: 171
+    params:
+      params.yaml:
+        create_files_table.last_modified: '2022-11-26T22:35:08.666000+00:00'
+    outs:
+    - path: src/data/contents_table.sql
+      hash: md5
+      md5: 25723df009242dd565787ddd392e9f92
+      size: 225
+  create_contents_table:
+    cmd: python src/data/create_contents_table.py
+    deps:
+    - path: params.yaml
+      hash: md5
+      md5: 95931a6c2a1cffeefef3951c661e4b97
+      size: 147
+    - path: src/data/contents_table.sql
+      hash: md5
+      md5: 25723df009242dd565787ddd392e9f92
+      size: 225
+    params:
+      params.yaml:
+        create_contents_table.last_modified: '2022-11-27T08:13:56.444000+00:00'
+    outs:
+    - path: src/data/packages_table.sql
+      hash: md5
+      md5: 587e4a54e40b90bdee2a3eba92721b64
+      size: 462
+  create_packages_table:
+    cmd: python src/data/create_packages_table.py
+    deps:
+    - path: src/data/packages_table.sql
+      hash: md5
+      md5: 587e4a54e40b90bdee2a3eba92721b64
+      size: 462
+    outs:
+    - path: src/data/pull_preproc.sql
+      hash: md5
+      md5: eeaad1cd51cf79df6f5de70e5210cbac
+      size: 616
+  preprocess:
+    cmd: python src/data/preproc.py
+    deps:
+    - path: src/data/pull_preproc.sql
+      hash: md5
+      md5: eeaad1cd51cf79df6f5de70e5210cbac
+      size: 616
+    outs:
+    - path: data/preprocessed/package_distances.csv
+      hash: md5
+      md5: 824e6ee485ffb8350752464506a6d226
+      size: 5670
+  pull_raw_metadata:
+    cmd: python src/data/pull_raw_metadata.py
+    outs:
+    - path: params.yaml
+      hash: md5
+      md5: 95931a6c2a1cffeefef3951c661e4b97
+      size: 147
+  cluster:
+    cmd: python src/models/cluster.py
+    deps:
+    - path: data/preprocessed/package_distances.csv
+      hash: md5
+      md5: 824e6ee485ffb8350752464506a6d226
+      size: 5670
+    outs:
+    - path: data/production/clustered_packages.csv
+      hash: md5
+      md5: 4e0fb71dc04d25b99ef294ae349dab71
+      size: 5515

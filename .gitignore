@@ -1,0 +1,11 @@
+# ignore __pycache__ files
+*__pycache__
+
+# ignore .swp .swo files
+*.swp
+*.swo
+
+# ignore plots/ dir
+plots/
+
+/.quarto/

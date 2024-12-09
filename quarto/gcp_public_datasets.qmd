@@ -1,0 +1,62 @@
+---
+title: "Python Package Clustering"
+format:
+  html:
+    code-fold: true
+---
+
+```{python}
+#| label: fig-Python-Packages
+#| fig-cap: "Scatterplot of Python package distances"
+
+# ----------------------
+# ---Import Libraries---
+# ----------------------
+
+# import standard libraries
+import pandas as pd
+
+# import system libraries
+import os
+
+# import plotting libraries
+import plotly.express as px
+
+# ---------------
+# ---Pull Data---
+# ---------------
+
+# define production data path
+prod_path = os.path.join("..", "data", "production", "clustered_packages.csv")
+
+# read data to df
+df = pd.read_csv(prod_path, index_col="package")
+
+# convert "cluster" col to str
+df["cluster"] = df["cluster"].astype(str)
+
+# ---------------
+# ---Plot Data---
+# ---------------
+
+# set plotting config
+size_scaler = 10**-3
+
+# plot scatterplot of package distances
+scatterplot = px.scatter(
+    data_frame=df,
+    x="V0",
+    y="V1",
+    size=df["count"].apply(lambda x: size_scaler * x),
+    color="cluster",
+    color_discrete_sequence=px.colors.qualitative.Bold,
+    category_orders={"cluster": sorted(df["cluster"].unique(), key=int)},
+    text=df.index,
+)
+
+# adjust text position
+scatterplot.update_traces(textposition="top center")
+
+# show plot
+scatterplot.show()
+```

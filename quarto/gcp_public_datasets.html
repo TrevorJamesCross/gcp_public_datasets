@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Python Package Clustering</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="gcp_public_datasets_files/libs/clipboard/clipboard.min.js"></script>
+<script src="gcp_public_datasets_files/libs/quarto-html/quarto.js"></script>
+<script src="gcp_public_datasets_files/libs/quarto-html/popper.min.js"></script>
+<script src="gcp_public_datasets_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="gcp_public_datasets_files/libs/quarto-html/anchor.min.js"></script>
+<link href="gcp_public_datasets_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="gcp_public_datasets_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="gcp_public_datasets_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="gcp_public_datasets_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="gcp_public_datasets_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.35.2.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Python Package Clustering</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="cell-fig-Python-Packages" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ----------------------</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ---Import Libraries---</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ----------------------</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># import standard libraries</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># import system libraries</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># import plotting libraries</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># ---Pull Data---</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># define production data path</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>prod_path <span class="op">=</span> os.path.join(<span class="st">".."</span>, <span class="st">"data"</span>, <span class="st">"production"</span>, <span class="st">"clustered_packages.csv"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># read data to df</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(prod_path, index_col<span class="op">=</span><span class="st">"package"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># convert "cluster" col to str</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"cluster"</span>] <span class="op">=</span> df[<span class="st">"cluster"</span>].astype(<span class="bu">str</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># ---Plot Data---</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># set plotting config</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>size_scaler <span class="op">=</span> <span class="dv">10</span><span class="op">**-</span><span class="dv">3</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co"># plot scatterplot of package distances</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>scatterplot <span class="op">=</span> px.scatter(</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    data_frame<span class="op">=</span>df,</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">"V0"</span>,</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="st">"V1"</span>,</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    size<span class="op">=</span>df[<span class="st">"count"</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: size_scaler <span class="op">*</span> x),</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="st">"cluster"</span>,</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    color_discrete_sequence<span class="op">=</span>px.colors.qualitative.Bold,</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    category_orders<span class="op">=</span>{<span class="st">"cluster"</span>: <span class="bu">sorted</span>(df[<span class="st">"cluster"</span>].unique(), key<span class="op">=</span><span class="bu">int</span>)},</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    text<span class="op">=</span>df.index,</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="co"># adjust text position</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>scatterplot.update_traces(textposition<span class="op">=</span><span class="st">"top center"</span>)</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="co"># show plot</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>scatterplot.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div id="fig-python-packages" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-python-packages-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>                            <div id="1b7842e2-5824-4198-ba36-a4876bd7f5f9" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("1b7842e2-5824-4198-ba36-a4876bd7f5f9")) {                    Plotly.newPlot(                        "1b7842e2-5824-4198-ba36-a4876bd7f5f9",                        [{"hovertemplate":"cluster=0\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"0","marker":{"color":"rgb(127, 60, 141)","size":[11.729000000000001,17.649,16.672,18.234,13.188,23.201,11.655,14.043000000000001,15.772,26.269000000000002,15.546000000000001,30.959,12.780000000000001],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"0","orientation":"v","showlegend":true,"text":["AnsibleModule","StringIO","_","db","distutils","matplotlib","openerp","pandas","swgpy","test","util","utils","xml"],"x":[-0.0030564957255296,0.0152386071752057,0.0090397580329389,0.0070442007438318,0.0069421216614221,0.0218568348074214,0.0031337760549723,0.0099351427556134,-0.0001919091902632,0.0150207218488203,0.0035872701453742,0.0238145806825034,0.0021315932142691],"xaxis":"x","y":[-0.0102289439289239,-0.0011898904404305,-0.0117993372975038,-0.0179668837084875,-0.0054316833528379,-0.0081440524227212,-0.0058858943188863,-0.0039568336648231,-0.0174663358535828,-0.0237386603885716,-0.0134827029618917,-0.0218259078791392,-0.0081552956130484],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=1\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"1","marker":{"color":"rgb(17, 165, 121)","size":[198.25300000000001],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"1","orientation":"v","showlegend":true,"text":["__future__"],"x":[-0.0194325001439445],"xaxis":"x","y":[-0.2000719507597643],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=2\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"2","marker":{"color":"rgb(57, 105, 172)","size":[69.748],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"2","orientation":"v","showlegend":true,"text":["a"],"x":[-0.0410102945650061],"xaxis":"x","y":[0.0680030318778531],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=3\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"3","marker":{"color":"rgb(242, 183, 1)","size":[28.018,48.528,26.053,21.519000000000002,29.798000000000002],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"3","orientation":"v","showlegend":true,"text":["argparse","collections","copy","scipy","shutil"],"x":[-0.0342804932178723,-0.0527021604637645,-0.0212576670367853,-0.0271997599113446,-0.0275524864981029],"xaxis":"x","y":[0.0161291710938576,0.0270554698578215,0.0244276631258182,0.0084348273412219,0.0260954136008967],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=4\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"4","marker":{"color":"rgb(231, 63, 116)","size":[82.849],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"4","orientation":"v","showlegend":true,"text":["datetime"],"x":[-0.0867603486450543],"xaxis":"x","y":[-0.0382062177754234],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=5\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"5","marker":{"color":"rgb(128, 186, 90)","size":[157.721],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"5","orientation":"v","showlegend":true,"text":["django"],"x":[0.1506101974330727],"xaxis":"x","y":[-0.064250098666103],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=6\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"6","marker":{"color":"rgb(230, 131, 16)","size":[11.849,11.205,15.344000000000001,11.014,11.024000000000001,12.097,11.535,11.392,14.574,10.591000000000001,11.641,11.238,11.93,11.519,10.562,10.932,13.465,11.037,12.136000000000001,15.655000000000001],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"6","orientation":"v","showlegend":true,"text":["annotations","api","base","cfg","constants","contextlib","exception","exceptions","glob","google","http","inspect","operator","patch","pickle","sklearn","struct","twisted","urlparse","uuid"],"x":[-0.0072248465811589,-0.003117314860789,0.007263688214129,-0.0012522456398534,-0.006034933565708,0.005693815747021,-0.0018211702392988,0.0014680168413975,0.0108981062619052,-0.0003034438098467,-0.0036697684177164,0.0028779439547834,0.0035728656559651,-0.0028530645306932,-0.0049745162831085,-0.0062943156316463,0.000419450317287,0.0002190273347292,0.0069674515470099,0.0104788796302343],"xaxis":"x","y":[0.0078580908571742,-0.0065413579093439,0.0098342622557214,-0.0027160025701266,0.0041341183053648,0.0023806221748643,0.0016901902407274,-0.0001901998357807,0.0036706405682189,0.0031365271665244,0.0080146927765095,-0.001282391160767,0.0045868553403744,-0.0050995672365965,0.0026242264597087,-0.0030977500814113,0.0103612619332171,0.0059636352338345,0.0002218913568116,0.0076877877100688],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=7\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"7","marker":{"color":"rgb(0, 134, 149)","size":[22.551000000000002,14.761000000000001,27.722,14.446,24.274,20.447,20.677,15.103,23.79],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"7","orientation":"v","showlegend":true,"text":["TestCase","User","ansible","flask","itertools","log","socket","sqlalchemy","threading"],"x":[-0.0237993383738243,-0.0069409857804068,-0.024576393959059,-0.0046072796846482,-0.0140932899029212,-0.0149818756083307,-0.0053004501483079,-0.0130568936938386,-0.0256464583831693],"xaxis":"x","y":[-0.0173089928950033,-0.0140051558085294,-0.0287827487455751,-0.0141935837817949,-0.0262736815270738,-0.0191788621868948,-0.0228610336506245,-0.012168559265988,-0.0191088589487285],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=8\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"8","marker":{"color":"rgb(207, 28, 144)","size":[75.794,99.57000000000001],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"8","orientation":"v","showlegend":true,"text":["json","logging"],"x":[0.0373237134131095,0.0698015714173528],"xaxis":"x","y":[0.0711192966536628,0.0794386896031505],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=9\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"9","marker":{"color":"rgb(249, 123, 114)","size":[16.726,14.11,14.706,10.529,15.686,13.713000000000001,14.256,12.801,15.404,17.126,13.958,18.687,19.034,12.682,13.527000000000001],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"9","orientation":"v","showlegend":true,"text":["an","base64","common","defaultdict","migrations","nose","optparse","platform","reverse","setup","setuptools","string","tests","types","which"],"x":[-0.0205108665010106,-0.011134774150139,-0.0137121162352897,-0.0088658966245711,-0.0141136611588146,-0.0141424960575746,-0.0071355913095797,-0.0084083007591221,-0.0161858026965625,-0.0193991984886908,-0.017345731514054,-0.0151961432216235,-0.0257424063448764,-0.0116271395844758,-0.0149822447740023],"xaxis":"x","y":[-0.0033278693649412,0.0071044127172935,-0.0089244292561481,0.0008107374793226,0.0092834904227876,0.0007068767855627,-0.0003173229901511,-0.0077508309575663,0.0048851261926692,0.0098886895080098,0.0016583779475253,0.016109132250159,0.001340041916952,-0.0038861691511184,-0.0029148576710039],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=10\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"10","marker":{"color":"rgb(165, 170, 153)","size":[103.123],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"10","orientation":"v","showlegend":true,"text":["numpy"],"x":[0.1041293346731849],"xaxis":"x","y":[0.0293953647184134],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=11\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"11","marker":{"color":"rgb(127, 60, 141)","size":[269.003],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"11","orientation":"v","showlegend":true,"text":["os"],"x":[0.2631861028890674],"xaxis":"x","y":[-0.0397714316911625],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=12\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"12","marker":{"color":"rgb(17, 165, 121)","size":[77.756,56.153],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"12","orientation":"v","showlegend":true,"text":["absolute_import","print_function"],"x":[0.056886857699811,0.04078463997694],"xaxis":"x","y":[-0.0605842823370143,-0.0443570533475344],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=13\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"13","marker":{"color":"rgb(57, 105, 172)","size":[29.637,35.948,40.082,51.721000000000004],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"13","orientation":"v","showlegend":true,"text":["mock","random","six","unicode_literals"],"x":[-0.0044889584466469,-0.0008181304012349,-0.0212441306098008,-0.001838771180267],"xaxis":"x","y":[-0.0345321954396901,-0.0421704848400098,-0.0452467713134155,-0.0633472376416514],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=14\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"14","marker":{"color":"rgb(242, 183, 1)","size":[105.208],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"14","orientation":"v","showlegend":true,"text":["re"],"x":[0.046077897440264],"xaxis":"x","y":[-0.1013825152214866],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=15\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"15","marker":{"color":"rgb(231, 63, 116)","size":[204.094],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"15","orientation":"v","showlegend":true,"text":["sys"],"x":[-0.1809491076053719],"xaxis":"x","y":[0.1058920115973008],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=16\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"16","marker":{"color":"rgb(128, 186, 90)","size":[28.854,43.195,42.975,27.908,25.328],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"16","orientation":"v","showlegend":true,"text":["math","models","settings","tempfile","urllib"],"x":[0.0255903017669051,0.0471499706355073,0.0451843759193871,0.0267067617261617,0.018844814350475],"xaxis":"x","y":[0.0178039388653171,0.0037156838272184,-0.0113531123809059,0.0068623363629956,0.0173887557408668],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=17\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"17","marker":{"color":"rgb(230, 131, 16)","size":[169.889],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"17","orientation":"v","showlegend":true,"text":["the"],"x":[0.0639794200957374],"xaxis":"x","y":[0.1623866935439232],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=18\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"18","marker":{"color":"rgb(0, 134, 149)","size":[94.67],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"18","orientation":"v","showlegend":true,"text":["time"],"x":[-0.1059914255611308],"xaxis":"x","y":[0.0004960874508797],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=19\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"19","marker":{"color":"rgb(207, 28, 144)","size":[20.48,42.63,23.776,16.449,23.001,17.372,30.441,20.107,28.869,22.236],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"19","orientation":"v","showlegend":true,"text":["config","division","functools","hashlib","homeassistant","io","pytest","requests","this","typing"],"x":[0.0074955486894019,0.0131609329361706,-0.0086350586873293,-0.0041844332573317,0.0094477018503359,0.002622632027909,-0.0019251457832084,-0.0090142029566322,-0.0161170689386776,0.0001877851895358],"xaxis":"x","y":[0.0192055965224234,0.0443162013463706,0.0262112791835364,0.0149394190949381,0.0240250460800804,0.0155678322975581,0.0367605004295201,0.0207107149565284,0.0333281208646109,0.0249572108144349],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=20\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"20","marker":{"color":"rgb(249, 123, 114)","size":[92.525],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"20","orientation":"v","showlegend":true,"text":["unittest"],"x":[0.0065561766287108],"xaxis":"x","y":[0.1023391421566408],"yaxis":"y","type":"scatter","textposition":"top center"},{"hovertemplate":"cluster=21\u003cbr\u003eV0=%{x}\u003cbr\u003eV1=%{y}\u003cbr\u003esize=%{marker.size}\u003cbr\u003epackage=%{text}\u003cextra\u003e\u003c\u002fextra\u003e","legendgroup":"21","marker":{"color":"rgb(165, 170, 153)","size":[40.31,28.005,21.392,25.755],"sizemode":"area","sizeref":0.6725074999999999,"symbol":"circle"},"mode":"markers+text","name":"21","orientation":"v","showlegend":true,"text":["subprocess","tensorflow","traceback","warnings"],"x":[-0.0484007923437834,-0.0371870819304658,-0.0271751856186623,-0.0328660261529512],"xaxis":"x","y":[-0.0185964648231084,0.0006712441609612,-0.0075938460689537,-0.0109621216359638],"yaxis":"y","type":"scatter","textposition":"top center"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"title":{"text":"V0"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"V1"}},"legend":{"title":{"text":"cluster"},"tracegroupgap":0,"itemsizing":"constant"}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('1b7842e2-5824-4198-ba36-a4876bd7f5f9');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-python-packages-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Scatterplot of Python package distances
+</figcaption>
+</figure>
+</div>
+</div>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

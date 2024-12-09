@@ -1,0 +1,60 @@
+#TODO: config .sql & CSV files as args into cmd
+stages:
+  pull_raw_metadata:
+    always_changed: true # always run this stage
+    cmd: python src/data/pull_raw_metadata.py
+    outs:
+      - params.yaml:
+          cache: false # track in git, not DVC
+          persist: true # keep file between dvc repro runs
+    desc: 'Check metadata of initial raw tables & store in params.yaml. If metadata
+      changes, stages create_files_table and create_contents_table are run; otherwise
+      they are skipped.'
+  create_files_table:
+    cmd: python src/data/create_files_table.py
+    params:
+      - create_files_table.last_modified
+    deps:
+      - src/data/files_table.sql
+      - params.yaml
+    outs:
+      - src/data/contents_table.sql:
+          cache: false
+          persist: true
+    desc: 'Create py_files table in BigQuery using public data.'
+  create_contents_table:
+    cmd: python src/data/create_contents_table.py
+    deps:
+      - src/data/contents_table.sql
+      - params.yaml
+    outs:
+      - src/data/packages_table.sql:
+          cache: false
+          persist: true
+    params:
+      - create_contents_table.last_modified
+    desc: 'Create py_contents table in BigQuery using public data and py_files
+      table.'
+  create_packages_table:
+    cmd: python src/data/create_packages_table.py
+    deps:
+      - src/data/packages_table.sql
+    outs:
+      - src/data/pull_preproc.sql:
+          cache: false
+          persist: true
+    desc: 'Create py_packages table in BigQuery using py_contents table.'
+  preprocess:
+    cmd: python src/data/preproc.py
+    deps:
+      - src/data/pull_preproc.sql
+    outs:
+      - data/preprocessed/package_distances.csv
+    desc: 'Pull & preprocess data from py_packages table, save data to CSV.'
+  cluster:
+    cmd: python src/models/cluster.py
+    deps:
+      - data/preprocessed/package_distances.csv
+    outs:
+      - data/production/clustered_packages.csv
+    desc: 'Pull preprocessed data and append cluster category column. Save data to CSV.'
